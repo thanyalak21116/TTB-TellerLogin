@@ -78,7 +78,7 @@ const LoginPage: React.FC = () => {
     checkMagicLink();
   }, [navigate]);
 
-  const handleSendLink = useCallback(() => {
+  const handleSendLink = useCallback(async () => {
     if (!email) return;
 
     const actionCodeSettings = {
@@ -88,7 +88,7 @@ const LoginPage: React.FC = () => {
 
     try {
       setStatus("sending");
-      sendSignInLinkToEmail(auth, email, actionCodeSettings);
+      await sendSignInLinkToEmail(auth, email, actionCodeSettings);
       window.localStorage.setItem("emailForSignIn", email);
       setStatus("sent");
       setOpenSnackbar(true);
