@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import {
   Container,
   TextField,
@@ -10,6 +10,7 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
+  Divider,
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { useCustomer } from "../context/CustomerContext";
@@ -29,7 +30,7 @@ interface CustomerFormData {
 const CustomerInfo: React.FC = () => {
   const navigate = useNavigate();
   const { customer, setCustomer } = useCustomer();
-  const [openDialog, setOpenDialog] = useState(false);
+  const [openCancelDialog, setOpenCancelDialog] = useState(false);
   const [openSuccessDialog, setOpenSuccessDialog] = useState(false);
 
   const {
@@ -48,21 +49,21 @@ const CustomerInfo: React.FC = () => {
     });
   }, [customer, reset]);
 
-  const onSubmit = (data: CustomerFormData) => {
+  const onSubmit = useCallback((data: CustomerFormData) => {
     setCustomer({ ...customer, ...data });
     setOpenSuccessDialog(true);
-  };
+  }, [customer, setCustomer]);
 
-  const handleSuccessConfirm = () => {
+  const handleSuccessConfirm = useCallback(() => {
     setOpenSuccessDialog(false);
     navigate("/upload-documents");
-  };
+  }, [navigate]);
 
-  const handleCancel = () => {
-    setOpenDialog(true);
-  };
+  const handleCancel = useCallback(() => {
+    setOpenCancelDialog(true);
+  }, []);
 
-  const confirmCancel = () => {
+  const confirmCancel = useCallback(() => {
     reset();
     setCustomer({
       firstName: "",
@@ -71,7 +72,7 @@ const CustomerInfo: React.FC = () => {
       accountNumber: "",
     });
     navigate("/");
-  };
+  }, [navigate, reset, setCustomer]);
 
   return (
     <Container maxWidth="md">
@@ -80,6 +81,8 @@ const CustomerInfo: React.FC = () => {
           <Typography variant="h3" gutterBottom>
             Customer Information
           </Typography>
+
+          <Divider sx={{ my: 3 }} />
 
           <form onSubmit={handleSubmit(onSubmit)} noValidate>
             <TextField
@@ -183,13 +186,13 @@ const CustomerInfo: React.FC = () => {
           </form>
         </Paper>
       </Box>
-      <Dialog open={openDialog} onClose={() => setOpenDialog(false)}>
+      <Dialog open={openCancelDialog} onClose={() => setOpenCancelDialog(false)}>
         <DialogTitle>Confirm Cancel</DialogTitle>
         <DialogContent>
           <Typography>Are you sure you want to cancel and return to the homepage?</Typography>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setOpenDialog(false)} color="inherit">
+          <Button onClick={() => setOpenCancelDialog(false)} color="inherit">
             No
           </Button>
           <Button onClick={confirmCancel} color="error">

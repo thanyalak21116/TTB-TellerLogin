@@ -40,13 +40,13 @@ const LoginPage: React.FC = () => {
 
   useEffect(() => {
     const checkMagicLink = async () => {
-      const url = window.location.href;
+      const emailLink = window.location.href;
 
-      if (isSignInWithEmailLink(auth, url)) {
+      if (isSignInWithEmailLink(auth, emailLink)) {
         let emailForLink = window.localStorage.getItem("emailForSignIn");
 
         try {
-          const result = await signInWithEmailLink(auth, emailForLink || "", url);
+          const result = await signInWithEmailLink(auth, emailForLink || "", emailLink);
           const user = result.user;
 
           const creationTime = user.metadata.creationTime;
@@ -60,6 +60,7 @@ const LoginPage: React.FC = () => {
               "This email is not authorized to access the system. Please contact the administrator."
             );
             navigate("/login", { replace: true });
+
             return;
           }
 
@@ -67,6 +68,7 @@ const LoginPage: React.FC = () => {
 
           alert("Login Success!");
           navigate("/", { replace: true });
+
         } catch (error: any) {
           console.error("Login error:", error);
           setErrorMsg("Login failed!");
@@ -88,12 +90,16 @@ const LoginPage: React.FC = () => {
 
     try {
       setStatus("sending");
+
       await sendSignInLinkToEmail(auth, email, actionCodeSettings);
+
       window.localStorage.setItem("emailForSignIn", email);
+
       setStatus("sent");
       setOpenSnackbar(true);
     } catch (error: any) {
       console.error("Error sending link:", error);
+
       setErrorMsg(error.message || "Something Went Wrong!");
       setStatus("error");
       setOpenErrorSnackbar(true)

@@ -1,5 +1,5 @@
 // src/pages/ReviewInfo.tsx
-import React from "react";
+import React, { useCallback } from "react";
 import {
   Container,
   Typography,
@@ -24,31 +24,31 @@ const ReviewInfo: React.FC = () => {
   const [openCancelDialog, setOpenCancelDialog] = React.useState(false);
   const [openBackDialog, setOpenBackDialog] = React.useState(false);
 
-  const handleConfirm = () => {
+  const handleConfirm = useCallback(() => {
     setOpenConfirmDialog(true);
-  };
+  }, []);
 
-  const handleDialogConfirm = () => {
+  const handleDialogConfirm = useCallback(() => {
     resetCustomer();
     navigate("/success");
-  };
+  }, []);
 
-  const handleCancel = () => {
+  const handleCancel = useCallback(() => {
     setOpenCancelDialog(true);
-  };
+  }, []);
 
-  const confirmCancel = () => {
+  const confirmCancel = useCallback(() => {
     resetCustomer();
     navigate("/");
-  };
+  }, []);
 
-  const handleBack = () => {
+  const handleBack = useCallback(() => {
     setOpenBackDialog(true);
-  };
+  }, []);
 
-  const confirmBack = () => {
+  const confirmBack = useCallback(() => {
     navigate("/upload-documents");
-  };
+  }, []);
 
   const {
     firstName,

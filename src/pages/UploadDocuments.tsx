@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 import {
   Container,
   Typography,
@@ -9,6 +9,7 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
+  Divider,
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { useCustomer } from "../context/CustomerContext";
@@ -22,12 +23,12 @@ const UploadDocuments: React.FC = () => {
   const navigate = useNavigate();
   const { customer, setCustomer } = useCustomer();
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files?.[0] || null;
     setCustomer({ ...customer, documentFile: selectedFile });
-  };
+  }, [customer, setCustomer]);
 
-  const handleSubmit = () => {
+  const handleSubmit = useCallback(() => {
     if (!customer.documentFile) {
       setOpenErrorDialog(true);
       setError("Please upload your identification document before proceeding.");
@@ -35,18 +36,18 @@ const UploadDocuments: React.FC = () => {
     }
 
     setOpenSuccessDialog(true);
-  };
+  }, [customer.documentFile]);
 
-  const handleSuccessConfirm = () => {
+  const handleSuccessConfirm = useCallback(() => {
     setOpenSuccessDialog(false);
     navigate("/review-info");
-  };
+  }, []);
 
-  const handleCancel = () => {
+  const handleCancel = useCallback(() => {
     setOpenDialog(true);
-  };
+  }, []);
 
-  const confirmCancel = () => {
+  const confirmCancel = useCallback(() => {
     setCustomer({
       firstName: "",
       lastName: "",
@@ -55,16 +56,16 @@ const UploadDocuments: React.FC = () => {
       documentFile: null,
     });
     navigate("/");
-  };
+  }, []);
 
-  const handleBack = () => {
+  const handleBack = useCallback(() => {
     setOpenBackDialog(true);
-  };
+  }, []);
 
-  const confirmBack = () => {
+  const confirmBack = useCallback(() => {
     setCustomer({ ...customer, documentFile: null });
     navigate("/customer-info");
-  };
+  }, []);
 
   return (
     <Box>
@@ -79,6 +80,8 @@ const UploadDocuments: React.FC = () => {
             <Typography variant="h3" gutterBottom>
               Upload Document
             </Typography>
+
+            <Divider sx={{ my: 3 }} />
 
             <Typography variant="h6" sx={{ mt: 2, color: "#757575" }}>
               <strong>First Name:</strong> {customer.firstName}

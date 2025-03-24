@@ -54,7 +54,7 @@ describe("SuccessPage", () => {
       </MemoryRouter>
     );
 
-    const button = screen.getByRole("button", { name: /Back to Dashboard/i });
+    const button = screen.getByRole("button", { name: /Back to Homepage/i });
     fireEvent.click(button);
 
     expect(mockNavigate).toHaveBeenCalledWith("/");

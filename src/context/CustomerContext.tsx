@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, ReactNode } from "react";
+import { createContext, useContext, useState, ReactNode, useCallback } from "react";
 
 interface CustomerInfo {
   firstName: string;
@@ -27,11 +27,11 @@ export const CustomerContext = createContext<CustomerContextType | undefined>(un
 export const CustomerProvider = ({ children }: { children: ReactNode }) => {
   const [customer, setCustomerState] = useState<CustomerInfo>(defaultCustomer);
 
-  const setCustomer = (data: Partial<CustomerInfo>) => {
+  const setCustomer = useCallback((data: Partial<CustomerInfo>) => {
     setCustomerState((prev) => ({ ...prev, ...data }));
-  };
+  }, []);
 
-  const resetCustomer = () => setCustomerState(defaultCustomer);
+  const resetCustomer = useCallback(() => setCustomerState(defaultCustomer), []);
 
   return (
     <CustomerContext.Provider value={{ customer, setCustomer, resetCustomer }}>

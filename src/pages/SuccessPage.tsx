@@ -36,7 +36,7 @@ const SuccessPage: React.FC = () => {
             sx={{ mt: 5, backgroundColor: "#F7A552", borderRadius: "50px", height: "60px" }}
             onClick={() => navigate("/")}
           >
-            Back to Dashboard
+            Back to Homepage
           </Button>
         </Paper>
       </Box>

@@ -32,7 +32,7 @@ describe("DashboardPage", () => {
     ).toBeInTheDocument();
   });
 
-  it("navigates to /customer-info when button is clicked", () => {
+  it("navigates to customer info page when button is clicked", () => {
     render(
       <MemoryRouter>
         <DashboardPage />

@@ -1,5 +1,3 @@
-// src/pages/ReviewInfo.test.tsx
-import React from "react";
 import { render, screen, fireEvent } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import ReviewInfo from "../pages/ReviewInfo";
@@ -14,8 +12,8 @@ jest.mock("react-router-dom", () => ({
 
 describe("ReviewInfo Page", () => {
   const fullCustomer = {
-    firstName: "Fern",
-    lastName: "Tester",
+    firstName: "firstName",
+    lastName: "lastName",
     citizenId: "1234567890123",
     accountNumber: "0987654321",
     documentFile: new File(["test"], "id-card.pdf", { type: "application/pdf" }),
@@ -47,12 +45,7 @@ describe("ReviewInfo Page", () => {
     expect(screen.getByText(/id-card.pdf/)).toBeInTheDocument();
   });
 
-  it("shows error if required data is missing", () => {
-    renderWithContext({} as any);
-    expect(screen.getByText(/Something Went Wrong/i)).toBeInTheDocument();
-  });
-
-  it("opens confirm dialog and navigates to /success", () => {
+  it("opens confirm dialog and navigates to success page", () => {
     renderWithContext();
     fireEvent.click(screen.getByText(/Confirm All Information/i));
     expect(screen.getByText(/Confirm Submission/i)).toBeInTheDocument();
@@ -60,7 +53,7 @@ describe("ReviewInfo Page", () => {
     expect(mockNavigate).toHaveBeenCalledWith("/success");
   });
 
-  it("opens cancel dialog and navigates to /", () => {
+  it("opens cancel dialog and navigates to home page", () => {
     renderWithContext();
     fireEvent.click(screen.getByText("Cancel"));
     expect(screen.getByText(/Confirm Cancel/i)).toBeInTheDocument();
@@ -68,11 +61,16 @@ describe("ReviewInfo Page", () => {
     expect(mockNavigate).toHaveBeenCalledWith("/");
   });
 
-  it("opens back dialog and navigates to /upload-documents", () => {
+  it("opens back dialog and navigates to upload documents page", () => {
     renderWithContext();
     fireEvent.click(screen.getByText(/Back to Previous Page/i));
     expect(screen.getByText(/Confirm Go Back/i)).toBeInTheDocument();
     fireEvent.click(screen.getByText(/Yes, Go Back/i));
     expect(mockNavigate).toHaveBeenCalledWith("/upload-documents");
+  });
+
+  it("shows error if required data is missing", () => {
+    renderWithContext({} as any);
+    expect(screen.getByText(/Something Went Wrong/i)).toBeInTheDocument();
   });
 });

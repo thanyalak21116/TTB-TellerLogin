@@ -1,8 +1,7 @@
-import React from "react";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import LoginPage from "../pages/Login";
 import { MemoryRouter } from "react-router-dom";
-import { sendSignInLinkToEmail } from "firebase/auth";
+import { isSignInWithEmailLink, sendSignInLinkToEmail, signInWithEmailLink } from "firebase/auth";
 import { useAuth } from "../context/AuthContext";
 
 jest.mock("firebase/auth", () => ({
@@ -68,9 +67,45 @@ describe("LoginPage", () => {
     fireEvent.click(button);
 
     await waitFor(() => {
-      expect(screen.getByText(/email sent successfully/i)).toBeInTheDocument();
+      expect(sendSignInLinkToEmail).toHaveBeenCalled();
     });
 
-    expect(sendSignInLinkToEmail).toHaveBeenCalled();
+    expect(screen.getByText(/email sent successfully/i)).toBeInTheDocument();
+  });
+
+  it("shows error snackbar when email sending fails", async () => {
+    (sendSignInLinkToEmail as jest.Mock).mockRejectedValueOnce(new Error("Error sending link"));
+  
+    render(
+      <MemoryRouter>
+        <LoginPage />
+      </MemoryRouter>
+    );
+  
+    const input = screen.getByLabelText("Email");
+    fireEvent.change(input, { target: { value: "test@example.com" } });
+  
+    const button = screen.getByRole("button", { name: /send email link login/i });
+    fireEvent.click(button);
+  
+    await waitFor(() => {
+      expect(sendSignInLinkToEmail).toHaveBeenCalled();
+    });
+  
+    expect(await screen.findByText(/Error sending link/i)).toBeInTheDocument();
+  });
+
+  it("redirects to homepage if already authenticated", async () => {
+    (useAuth as jest.Mock).mockReturnValue({ isAuthenticated: true });
+  
+    render(
+      <MemoryRouter>
+        <LoginPage />
+      </MemoryRouter>
+    );
+  
+    await waitFor(() => {
+      expect(mockNavigate).toHaveBeenCalledWith("/");
+    });
   });
 });

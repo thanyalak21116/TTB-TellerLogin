@@ -11,7 +11,7 @@ jest.mock("react-router-dom", () => ({
 }));
 
 describe("CustomerInfo Page", () => {
-  const setup = () =>
+  const container = () =>
     render(
       <CustomerProvider>
         <MemoryRouter>
@@ -21,7 +21,7 @@ describe("CustomerInfo Page", () => {
     );
 
   it("renders form inputs", () => {
-    setup();
+    container();
     expect(screen.getByLabelText(/Firstname/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/Lastname/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/Thai Citizen ID/i)).toBeInTheDocument();
@@ -29,13 +29,13 @@ describe("CustomerInfo Page", () => {
   });
 
   it("validates empty fields on submit", async () => {
-    setup();
+    container();
     const confirmButton = screen.getByRole("button", { name: /confirm/i });
     expect(confirmButton).toBeDisabled();
   });
 
   it("shows validation error for invalid citizen ID", async () => {
-    setup();
+    container();
     fireEvent.change(screen.getByLabelText(/Thai Citizen ID/i), {
       target: { value: "123" },
     });
@@ -45,13 +45,32 @@ describe("CustomerInfo Page", () => {
     });
   });
 
+  it("shows validation error for invalid account number", async () => {
+    container();
+    fireEvent.change(screen.getByLabelText(/Account Number/i), {
+      target: { value: "123" },
+    });
+    fireEvent.blur(screen.getByLabelText(/Account Number/i));
+  
+    await waitFor(() => {
+      expect(
+        screen.getByText(/Account number must be 10–12 digits/i)
+      ).toBeInTheDocument();
+    });
+  });
+  
+
   it("shows success dialog on valid submit", async () => {
-    setup();
+    const mockNavigate = jest.fn();
+    jest.spyOn(require("react-router-dom"), "useNavigate").mockReturnValue(mockNavigate);
+
+    container();
+
     fireEvent.change(screen.getByLabelText(/Firstname/i), {
-      target: { value: "Fern" },
+      target: { value: "Firstname" },
     });
     fireEvent.change(screen.getByLabelText(/Lastname/i), {
-      target: { value: "Baifern" },
+      target: { value: "Lastname" },
     });
     fireEvent.change(screen.getByLabelText(/Thai Citizen ID/i), {
       target: { value: "1101700230701" },
@@ -70,10 +89,16 @@ describe("CustomerInfo Page", () => {
         screen.getByText(/Customer information saved successfully/i)
       ).toBeInTheDocument();
     });
+
+    fireEvent.click(screen.getByRole("button", { name: /ok/i }));
+
+    await waitFor(() => {
+      expect(mockNavigate).toHaveBeenCalledWith("/upload-documents");
+    });
   });
 
   it("opens cancel dialog when clicking Cancel", () => {
-    setup();
+    container();
     fireEvent.click(screen.getByRole("button", { name: /cancel/i }));
     expect(
       screen.getByText(/Are you sure you want to cancel/i)
